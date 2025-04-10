@@ -1,0 +1,164 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API de Bolos",
+    "version": "1.0.0",
+    "description": "Documenta\u00e7\u00e3o da API de Bolos para cadastro, listagem, atualiza\u00e7\u00e3o e remo\u00e7\u00e3o."
+  },
+  "paths": {
+    "/api/bolos": {
+      "get": {
+        "summary": "Listar todos os bolos",
+        "responses": {
+          "200": {
+            "description": "Lista de bolos retornada com sucesso"
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar novo bolo",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome": {
+                    "type": "string"
+                  },
+                  "peso": {
+                    "type": "integer"
+                  },
+                  "valor": {
+                    "type": "number"
+                  },
+                  "quantidade_disponivel": {
+                    "type": "integer"
+                  },
+                  "emails_interessados": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "email"
+                    }
+                  }
+                },
+                "required": [
+                  "nome",
+                  "peso",
+                  "valor",
+                  "quantidade_disponivel"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Bolo criado com sucesso"
+          },
+          "422": {
+            "description": "Dados inv\u00e1lidos"
+          }
+        }
+      }
+    },
+    "/api/bolos/{id}": {
+      "get": {
+        "summary": "Buscar bolo por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados do bolo"
+          },
+          "404": {
+            "description": "Bolo n\u00e3o encontrado"
+          }
+        }
+      },
+      "put": {
+        "summary": "Atualizar bolo por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome": {
+                    "type": "string"
+                  },
+                  "peso": {
+                    "type": "integer"
+                  },
+                  "valor": {
+                    "type": "number"
+                  },
+                  "quantidade_disponivel": {
+                    "type": "integer"
+                  },
+                  "emails_interessados": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "email"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Bolo atualizado"
+          },
+          "404": {
+            "description": "Bolo n\u00e3o encontrado"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remover bolo por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bolo deletado com sucesso"
+          },
+          "404": {
+            "description": "Bolo n\u00e3o encontrado"
+          }
+        }
+      }
+    }
+  }
+}

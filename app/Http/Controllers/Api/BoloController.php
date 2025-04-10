@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Bolo;
 use App\Http\Resources\BoloResource;
+use App\Jobs\EnviarEmailBoloDisponivel;
 
 class BoloController extends Controller
 {
@@ -35,6 +36,10 @@ class BoloController extends Controller
             ...$validated,
             'emails_interessados' => $validated['emails_interessados'] ?? [],
         ]);
+
+        if ($bolo->quantidade_disponivel > 0 && !empty($validated['emails_interessados'])) {
+            EnviarEmailBoloDisponivel::dispatch($bolo->nome, $validated['emails_interessados']);
+        }
 
         return new BoloResource($bolo);
     }

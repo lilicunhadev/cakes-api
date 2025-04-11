@@ -1,7 +1,8 @@
-# 🍰 CAKES API
+# CAKES API 🍰
 
 Este é um projeto de uma **API REST** para o cadastro de bolos.  
-A cada novo bolo cadastrado, o sistema armazena informações como: nome, valor, peso (em gramas), quantidade disponível e uma lista de e-mails de clientes interessados.<br>
+A cada novo bolo cadastrado, o sistema armazena informações como: nome, valor, quantidade disponível e uma lista de e-mails de clientes interessados.
+
 Se o bolo estiver disponível, o sistema **envia e-mails automaticamente** para os interessados utilizando **filas (queues)** do Laravel.
 
 ---
@@ -83,4 +84,3 @@ Você verá uma documentação interativa da API com todos os endpoints.
 ---
 
 ## ✅ Pronto! Agora você pode cadastrar bolos e o sistema notificará automaticamente os interessados via e-mail. 🍰📬
-

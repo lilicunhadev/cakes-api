@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use App\Models\Bolo;
 use App\Http\Resources\BoloResource;
 use App\Jobs\EnviarEmailBoloDisponivel;
 use App\Http\Requests\StoreBoloRequest;
 use App\Http\Requests\UpdateBoloRequest;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class BoloController extends Controller
 {
@@ -53,53 +55,41 @@ class BoloController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Bolo $bolo)
+    public function show($id)
     {
-        if (!$bolo) {
+        try {
+            $bolo = Bolo::findOrFail($id);
+            return response()->json(['data' => $bolo]);
+        } catch (ModelNotFoundException $e) {
             return response()->json(['message' => 'Bolo não encontrado.'], 404);
         }
-
-        return new BoloResource($bolo);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateBoloRequest $request, Bolo $bolo)
+    public function update(UpdateBoloRequest $request, $id)
     {
-        if (!$bolo) {
-            return response()->json(['message' => 'Bolo não encontrado.'], 404);
-        }
-
         try {
-            $bolo->update($request->validated());
-
-            return new BoloResource($bolo);
-        } catch (\Throwable $e) {
-            return response()->json([
-                'message' => 'Erro ao atualizar bolo.',
-                'error' => $e->getMessage(),
-            ], 500);
+            $bolo = Bolo::findOrFail($id);
+            $bolo->update($request->all());
+            return response()->json(['data' => $bolo]);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'Bolo não encontrado.'], 404);
         }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Bolo $bolo)
+    public function destroy($id)
     {
-        if (!$bolo) {
-            return response()->json(['message' => 'Bolo não encontrado.'], 404);
-        }
-
         try {
+            $bolo = Bolo::findOrFail($id);
             $bolo->delete();
-            return response()->json(['message' => 'Bolo deletado com sucesso']);
-        } catch (\Throwable $e) {
-            return response()->json([
-                'message' => 'Erro ao deletar bolo.',
-                'error' => $e->getMessage(),
-            ], 500);
+            return response()->json(['message' => 'Bolo deletado com sucesso.']);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'Bolo não encontrado.'], 404);
         }
     }
 }

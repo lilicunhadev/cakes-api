@@ -70,12 +70,17 @@ Para garantir que o sistema seja escalável mesmo com milhares de e-mails (ex: 5
    php artisan migrate
    ```
 
-7. Inicie o servidor Laravel:
+7. (Opcional) Popule o banco de dados com bolos fictícios:
+   ```bash
+   php artisan db:seed
+   ```
+
+8. Inicie o servidor Laravel:
    ```bash
    php artisan serve
    ```
 
-8. Em outro terminal, inicie o worker da fila:
+9. Em outro terminal, inicie o worker da fila:
    ```bash
    php artisan queue:work --tries=3 --timeout=60 --backoff=10
    ```
@@ -124,6 +129,21 @@ vendor/bin/pest
 ```
 
 Durante a execução, o Pest mostra um resumo com os testes que passaram ou falharam.
+
+---
+
+## 🌱 Seeds
+
+O projeto inclui um seeder chamado `BoloSeeder`, que preenche o banco de dados com bolos fictícios para testes e demonstrações.  
+Para executá-lo manualmente:
+
+```bash
+php artisan db:seed
+```
+
+Esse comando insere bolos com diferentes valores e quantidades, incluindo e-mails de interessados. Ideal para testar o envio automático de e-mails e a visualização de dados na API.
+
+Além disso, o seeder também utiliza a biblioteca `Faker` para gerar bolos aleatórios com nomes, valores, pesos e e-mails variados. Isso garante diversidade nos dados e facilita testes realistas durante o desenvolvimento.
 
 ---
 

@@ -1,3 +1,4 @@
+
 # 🍰 CAKES API
 
 Este é um projeto de uma **API REST** para o cadastro de bolos.  
@@ -79,6 +80,50 @@ Para garantir que o sistema seja escalável mesmo com milhares de e-mails (ex: 5
    ```bash
    php artisan queue:work --tries=3 --timeout=60 --backoff=10
    ```
+
+---
+
+## 🧪 Como testar a API
+
+É recomendado o uso de ferramentas como [Postman](https://www.postman.com/) ou [Insomnia](https://insomnia.rest/) para testar os endpoints da API com facilidade.
+
+Exemplo de requisição para criação de bolo (POST `/api/bolos`):
+
+```json
+{
+  "nome": "Bolo de Chocolate",
+  "peso": 1000,
+  "valor": 42.50,
+  "quantidade_disponivel": 10,
+  "emails_interessados": [
+    "cliente1@email.com",
+    "cliente2@email.com"
+  ]
+}
+```
+
+---
+
+## 🛠️ Monitoramento dos e-mails enviados
+
+O processo de envio de e-mails ocorre de forma assíncrona por meio de **jobs** enfileirados no Redis.
+
+Para acompanhar o que está acontecendo, você pode visualizar os logs no Laravel:
+
+```bash
+tail -f storage/logs/laravel.log
+```
+
+Ali você verá mensagens como:
+
+```
+[INFO] Iniciando envio do bolo 'Bolo de Chocolate' para 1000 interessados...
+[INFO] E-mail enviado para: cliente1@email.com
+[ERROR] Falha ao enviar para cliente2@email.com: SMTP server not responding
+[INFO] Job finalizado para 1000 e-mails (Bolo: Bolo de Chocolate)
+```
+
+Esses logs ajudam a verificar se o envio está funcionando corretamente ou se houve algum erro com algum destinatário.
 
 ---
 

@@ -141,4 +141,4 @@ Você verá uma documentação interativa da API com todos os endpoints.
 
 ---
 
-## ✅ Agora você pode cadastrar bolos e o sistema notificará automaticamente os interessados via e-mail, com escalabilidade garantida. 🍰⚡
+### ✅ Agora você pode cadastrar bolos e o sistema notificará automaticamente os interessados via e-mail, com escalabilidade garantida. 🍰⚡

@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Bolo;
 use App\Http\Resources\BoloResource;
 use App\Jobs\EnviarEmailBoloDisponivel;
+use App\Http\Requests\StoreBoloRequest;
+use App\Http\Requests\UpdateBoloRequest;
 
 class BoloController extends Controller
 {
@@ -21,34 +23,32 @@ class BoloController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreBoloRequest $request)
     {
-        $validated = $request->validate([
-            'nome' => 'required|string|max:255',
-            'peso' => 'required|integer|min:1',
-            'valor' => 'required|numeric|min:0',
-            'quantidade_disponivel' => 'required|integer|min:0',
-            'emails_interessados' => 'nullable|array',
-            'emails_interessados.*' => 'email',
-        ]);
+        try {
+            $bolo = Bolo::create([
+                ...$request->validated(),
+                'emails_interessados' => $request->validated()['emails_interessados'] ?? [],
+            ]);
 
-        $bolo = Bolo::create([
-            ...$validated,
-            'emails_interessados' => $validated['emails_interessados'] ?? [],
-        ]);
+            if ($bolo->quantidade_disponivel > 0 && !empty($request->validated()['emails_interessados'])) {
+                collect($request->validated()['emails_interessados'])
+                    ->chunk(1000)
+                    ->each(function ($chunk, $index) use ($bolo) {
+                        EnviarEmailBoloDisponivel::dispatch(
+                            $bolo->nome,
+                            $chunk->toArray()
+                        )->delay(now()->addSeconds($index * 30));
+                    });
+            }
 
-        if ($bolo->quantidade_disponivel > 0 && !empty($validated['emails_interessados'])) {
-            collect($validated['emails_interessados'])
-                ->chunk(1000)
-                ->each(function ($chunk, $index) use ($bolo) {
-                    EnviarEmailBoloDisponivel::dispatch(
-                        $bolo->nome,
-                        $chunk->toArray()
-                    )->delay(now()->addSeconds($index * 30));
-                });
+            return new BoloResource($bolo);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Erro ao cadastrar bolo.',
+                'error' => $e->getMessage(),
+            ], 500);
         }
-
-        return new BoloResource($bolo);
     }
 
     /**
@@ -56,26 +56,32 @@ class BoloController extends Controller
      */
     public function show(Bolo $bolo)
     {
+        if (!$bolo) {
+            return response()->json(['message' => 'Bolo não encontrado.'], 404);
+        }
+
         return new BoloResource($bolo);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Bolo $bolo)
+    public function update(UpdateBoloRequest $request, Bolo $bolo)
     {
-        $validated = $request->validate([
-            'nome' => 'sometimes|required|string|max:255',
-            'peso' => 'sometimes|required|integer|min:1',
-            'valor' => 'sometimes|required|numeric|min:0',
-            'quantidade_disponivel' => 'sometimes|required|integer|min:0',
-            'emails_interessados' => 'nullable|array',
-            'emails_interessados.*' => 'email',
-        ]);
+        if (!$bolo) {
+            return response()->json(['message' => 'Bolo não encontrado.'], 404);
+        }
 
-        $bolo->update($validated);
+        try {
+            $bolo->update($request->validated());
 
-        return new BoloResource($bolo);
+            return new BoloResource($bolo);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Erro ao atualizar bolo.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**
@@ -83,7 +89,18 @@ class BoloController extends Controller
      */
     public function destroy(Bolo $bolo)
     {
-        $bolo->delete();
-        return response()->json(['message' => 'Bolo deletado com sucesso']);
+        if (!$bolo) {
+            return response()->json(['message' => 'Bolo não encontrado.'], 404);
+        }
+
+        try {
+            $bolo->delete();
+            return response()->json(['message' => 'Bolo deletado com sucesso']);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Erro ao deletar bolo.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 }

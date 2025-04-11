@@ -1,10 +1,10 @@
 # 🍰 CAKES API
 
 Este é um projeto de uma **API RESTful** desenvolvida em Laravel para gerenciamento de bolos.  
-Cada vez que um novo bolo é cadastrado, o sistema armazena informações como: nome, valor, peso (em gramas), quantidade disponível e uma lista de e-mails de clientes interessados.  
-Se o bolo tiver unidades disponíveis, o sistema **envia e-mails automaticamente** aos interessados utilizando **filas (queues)** com **Redis** como driver de backend, além de técnicas de **chunking** e **atraso inteligente** nos jobs para garantir escalabilidade mesmo com dezenas de milhares de destinatários.  
-A persistência dos dados é feita em um banco **SQLite**, ideal para ambientes de desenvolvimento e testes rápidos.  
-Além disso, o sistema conta com **testes automatizados usando PestPHP**, e uma documentação completa no padrão **OpenAPI/Swagger**.
+> Cada vez que um novo bolo é cadastrado, o sistema armazena informações como: nome, valor, peso (em gramas), quantidade disponível e uma lista de e-mails de clientes interessados.  
+> Se o bolo tiver unidades disponíveis, o sistema **envia e-mails automaticamente** aos interessados utilizando **filas (queues)** com **Redis** como driver de backend, além de técnicas de **chunking** e **atraso inteligente** nos jobs para garantir escalabilidade mesmo com dezenas de milhares de destinatários.  
+> A persistência dos dados é feita em um banco **SQLite**, ideal para ambientes de desenvolvimento e testes rápidos.  
+> Além disso, o sistema conta com **testes automatizados usando PestPHP**, e uma documentação completa no padrão **OpenAPI/Swagger**.
 ---
 
 ## ⚠️ Pré-requisitos

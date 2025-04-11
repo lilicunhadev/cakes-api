@@ -1,4 +1,3 @@
-
 # 🍰 CAKES API
 
 Este é um projeto de uma **API REST** para o cadastro de bolos.  
@@ -101,6 +100,30 @@ Exemplo de requisição para criação de bolo (POST `/api/bolos`):
   ]
 }
 ```
+---
+## 🧪 Testes com PestPHP
+
+O projeto utiliza o [PestPHP](https://pestphp.com/) como framework de testes, oferecendo uma sintaxe fluida e moderna para testes unitários, de validação e de funcionalidades da API.
+
+### Instalação do Pest
+
+Se ainda não estiver instalado, execute os comandos abaixo para instalar o Pest no projeto:
+
+```bash
+composer require pestphp/pest:^3.8 nunomaduro/collision:^8.8 phpunit/phpunit:^11.5 --dev --with-all-dependencies
+composer require pestphp/pest-plugin-laravel --dev
+vendor/bin/pest --init
+```
+
+### Rodando os testes
+
+Para executar todos os testes do projeto:
+
+```bash
+vendor/bin/pest
+```
+
+Durante a execução, o Pest mostra um resumo com os testes que passaram ou falharam.
 
 ---
 

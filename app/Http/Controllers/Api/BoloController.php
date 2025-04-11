@@ -3,47 +3,50 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Bolo;
 use App\Http\Resources\BoloResource;
-use App\Jobs\EnviarEmailBoloDisponivel;
 use App\Http\Requests\StoreBoloRequest;
 use App\Http\Requests\UpdateBoloRequest;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Services\BoloService;
+use Illuminate\Http\JsonResponse;
 
 class BoloController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    protected BoloService $boloService;
+
+    public function __construct(BoloService $boloService)
     {
-        return BoloResource::collection(Bolo::all());
+        $this->boloService = $boloService;
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreBoloRequest $request)
+    // Lista todos os bolos cadastrados
+    public function index(): JsonResponse
     {
         try {
-            $bolo = Bolo::create([
-                ...$request->validated(),
-                'emails_interessados' => $request->validated()['emails_interessados'] ?? [],
-            ]);
+            $bolos = Bolo::all();
+            return response()->json([
+                'data' => BoloResource::collection($bolos),
+                'message' => 'Lista de bolos carregada com sucesso.',
+                'status' => 200
+            ], 200);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Erro ao listar bolos.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 
-            if ($bolo->quantidade_disponivel > 0 && !empty($request->validated()['emails_interessados'])) {
-                collect($request->validated()['emails_interessados'])
-                    ->chunk(1000)
-                    ->each(function ($chunk, $index) use ($bolo) {
-                        EnviarEmailBoloDisponivel::dispatch(
-                            $bolo->nome,
-                            $chunk->toArray()
-                        )->delay(now()->addSeconds($index * 30));
-                    });
-            }
-
-            return new BoloResource($bolo);
+    // Cadastra um novo bolo e envia e-mails para os interessados, se houver disponibilidade
+    public function store(StoreBoloRequest $request): JsonResponse
+    {
+        try {
+            $bolo = $this->boloService->criarBoloComEmails($request->validated());
+            return response()->json([
+                'data' => new BoloResource($bolo),
+                'message' => 'Bolo cadastrado com sucesso.',
+                'status' => 201
+            ], 201);
         } catch (\Throwable $e) {
             return response()->json([
                 'message' => 'Erro ao cadastrar bolo.',
@@ -52,44 +55,62 @@ class BoloController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show($id)
+    // Exibe os dados de um bolo específico pelo ID
+    public function show($id): JsonResponse
     {
         try {
-            $bolo = Bolo::findOrFail($id);
-            return response()->json(['data' => $bolo]);
-        } catch (ModelNotFoundException $e) {
+            $bolo = $this->boloService->buscarPorId($id);
+            return response()->json([
+                'data' => $bolo,
+                'message' => 'Bolo encontrado com sucesso.',
+                'status' => 200
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json(['message' => 'Bolo não encontrado.'], 404);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Erro ao buscar bolo.',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateBoloRequest $request, $id)
+    // Atualiza os dados de um bolo específico
+    public function update(UpdateBoloRequest $request, $id): JsonResponse
     {
         try {
-            $bolo = Bolo::findOrFail($id);
-            $bolo->update($request->all());
-            return response()->json(['data' => $bolo]);
-        } catch (ModelNotFoundException $e) {
+            $bolo = $this->boloService->atualizarBolo($id, $request->all());
+            return response()->json([
+                'data' => $bolo,
+                'message' => 'Bolo atualizado com sucesso.',
+                'status' => 200
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json(['message' => 'Bolo não encontrado.'], 404);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Erro ao atualizar bolo.',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id)
+    // Remove um bolo específico do sistema
+    public function destroy($id): JsonResponse
     {
         try {
-            $bolo = Bolo::findOrFail($id);
-            $bolo->delete();
-            return response()->json(['message' => 'Bolo deletado com sucesso.']);
-        } catch (ModelNotFoundException $e) {
+            $this->boloService->deletarBolo($id);
+            return response()->json([
+                'message' => 'Bolo deletado com sucesso.',
+                'status' => 200
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json(['message' => 'Bolo não encontrado.'], 404);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Erro ao deletar bolo.',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 }

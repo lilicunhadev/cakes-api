@@ -11,7 +11,8 @@ it('lista todos os bolos', function () {
 
     get('/api/bolos')
         ->assertOk()
-        ->assertJsonCount(3, 'data');
+        ->assertJsonPath('message', 'Lista de bolos carregada com sucesso.')
+        ->assertJsonPath('data', fn ($data) => is_array($data) && count($data) === 3);
 });
 
 it('cria um novo bolo', function () {
@@ -25,14 +26,18 @@ it('cria um novo bolo', function () {
 
     post('/api/bolos', $data, ['Accept' => 'application/json'])
         ->assertCreated()
+        ->assertJsonPath('message', 'Bolo cadastrado com sucesso.')
+        ->assertJsonPath('status', 201)
         ->assertJsonPath('data.nome', 'Bolo de Chocolate');
 });
 
 it('exibe um bolo existente', function () {
     $bolo = Bolo::factory()->create();
 
-    get("/api/bolos/{$bolo->id}")
+    get("/api/bolos/{$bolo->id}", ['Accept' => 'application/json'])
         ->assertOk()
+        ->assertJsonPath('message', 'Bolo encontrado com sucesso.')
+        ->assertJsonPath('status', 200)
         ->assertJsonPath('data.id', $bolo->id);
 });
 
@@ -41,17 +46,20 @@ it('atualiza um bolo existente', function () {
 
     $update = ['nome' => 'Bolo de Cenoura'];
 
-    put("/api/bolos/{$bolo->id}", $update)
+    put("/api/bolos/{$bolo->id}", $update, ['Accept' => 'application/json'])
         ->assertOk()
+        ->assertJsonPath('message', 'Bolo atualizado com sucesso.')
+        ->assertJsonPath('status', 200)
         ->assertJsonPath('data.nome', 'Bolo de Cenoura');
 });
 
 it('deleta um bolo existente', function () {
     $bolo = Bolo::factory()->create();
 
-    delete("/api/bolos/{$bolo->id}")
+    delete("/api/bolos/{$bolo->id}", ['Accept' => 'application/json'])
         ->assertOk()
-        ->assertJson(['message' => 'Bolo deletado com sucesso.']);
+        ->assertJson(['message' => 'Bolo deletado com sucesso.'])
+        ->assertJsonPath('status', 200);
 });
 
 it('não permite criar bolo com nome vazio', function () {

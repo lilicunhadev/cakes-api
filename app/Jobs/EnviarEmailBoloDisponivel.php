@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\Log;
 
 class EnviarEmailBoloDisponivel implements ShouldQueue
 {
@@ -31,8 +32,18 @@ class EnviarEmailBoloDisponivel implements ShouldQueue
      */
     public function handle(): void
     {
+        $total = count($this->emails);
+        Log::info("Iniciando envio do bolo '{$this->nomeBolo}' para {$total} interessados...");
+
         foreach ($this->emails as $email) {
-            Mail::to($email)->queue(new BoloDisponivelMail($this->nomeBolo));
+            try {
+                Mail::to($email)->queue(new BoloDisponivelMail($this->nomeBolo));
+                Log::info("E-mail enviado para: {$email}");
+            } catch (\Exception $e) {
+                Log::error("Falha ao enviar para {$email}: " . $e->getMessage());
+            }
         }
+
+        Log::info("Job finalizado para {$total} e-mails (Bolo: {$this->nomeBolo})");
     }
 }

@@ -4,14 +4,25 @@ Este é um projeto de uma **API REST** para o cadastro de bolos.
 A cada novo bolo cadastrado, o sistema armazena informações como: nome, valor, peso (em gramas), quantidade disponível e uma lista de e-mails de clientes interessados.<br>
 Se o bolo estiver disponível, o sistema **envia e-mails automaticamente** para os interessados utilizando **filas (queues)** do Laravel.
 
+Para garantir que o sistema seja escalável mesmo com milhares de e-mails (ex: 50.000 ou mais), foi adotado o uso do **Redis** como gerenciador de filas, além de técnicas como **chunking** (divisão em blocos) e **atraso inteligente** dos jobs.
+
+---
+
+## ⚠️ Pré-requisitos
+
+- PHP 8.2+
+- Composer
+- Redis instalado localmente ([guia oficial de instalação](https://redis.io/docs/getting-started/installation/))
+- Conta gratuita no [Mailtrap](https://mailtrap.io/) para testar envio de e-mails
+
 ---
 
 ## 🚀 Instruções de instalação
 
 1. Clone este repositório:
    ```bash
-   git clone https://github.com/seu-usuario/laravel-api-bolos.git
-   cd laravel-api-bolos
+   git clone https://github.com/lilicunhadev/cakes-api.git
+   cd cakes-api
    ```
 
 2. Instale as dependências:
@@ -34,8 +45,11 @@ Se o bolo estiver disponível, o sistema **envia e-mails automaticamente** para 
    DB_CONNECTION=sqlite
    DB_DATABASE=/caminho/completo/até/database/database.sqlite
 
-   QUEUE_CONNECTION=database
+   QUEUE_CONNECTION=redis
+   CACHE_DRIVER=redis
+   SESSION_DRIVER=redis
 
+   # Usando Mailtrap
    MAIL_MAILER=smtp
    MAIL_HOST=sandbox.smtp.mailtrap.io
    MAIL_PORT=2525
@@ -44,26 +58,26 @@ Se o bolo estiver disponível, o sistema **envia e-mails automaticamente** para 
    MAIL_ENCRYPTION=tls
    MAIL_FROM_ADDRESS=test@bolos.com
    MAIL_FROM_NAME="Bolos da Dona Flor"
+
+   REDIS_CLIENT=phpredis
+   REDIS_HOST=127.0.0.1
+   REDIS_PORT=6379
+   REDIS_PASSWORD=null
    ```
 
-6. Gere a tabela de jobs para fila:
-   ```bash
-   php artisan queue:table
-   ```
-
-7. Execute as migrations:
+6. Execute as migrations:
    ```bash
    php artisan migrate
    ```
 
-8. Inicie o servidor:
+7. Inicie o servidor Laravel:
    ```bash
    php artisan serve
    ```
 
-9. Inicie o worker da fila (em outro terminal):
+8. Em outro terminal, inicie o worker da fila:
    ```bash
-   php artisan queue:work
+   php artisan queue:work --tries=3 --timeout=60 --backoff=10
    ```
 
 ---
@@ -82,5 +96,4 @@ Você verá uma documentação interativa da API com todos os endpoints.
 
 ---
 
-## ✅ Pronto! Agora você pode cadastrar bolos e o sistema notificará automaticamente os interessados via e-mail. 🍰📬
-
+## ✅ Agora você pode cadastrar bolos e o sistema notificará automaticamente os interessados via e-mail, com escalabilidade garantida. 🍰⚡

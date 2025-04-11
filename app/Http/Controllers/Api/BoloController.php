@@ -38,7 +38,14 @@ class BoloController extends Controller
         ]);
 
         if ($bolo->quantidade_disponivel > 0 && !empty($validated['emails_interessados'])) {
-            EnviarEmailBoloDisponivel::dispatch($bolo->nome, $validated['emails_interessados']);
+            collect($validated['emails_interessados'])
+                ->chunk(1000)
+                ->each(function ($chunk, $index) use ($bolo) {
+                    EnviarEmailBoloDisponivel::dispatch(
+                        $bolo->nome,
+                        $chunk->toArray()
+                    )->delay(now()->addSeconds($index * 30));
+                });
         }
 
         return new BoloResource($bolo);

@@ -1,0 +1,155 @@
+{
+	"info": {
+		"_postman_id": "1ec75829-7083-4d4b-844c-fbc6d45d1ad3",
+		"name": "CAKE'S API",
+		"description": "Coleção de testes para a API de Bolos (Laravel)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29439046"
+	},
+	"item": [
+		{
+			"name": "Criar Bolo",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"nome\": \"Bolo Teste 1\",\n  \"peso\": 1600,\n  \"valor\": 98.00,\n  \"quantidade_disponivel\": 2,\n  \"emails_interessados\": [\n    \"cliente1@email.com\",\n    \"cliente20@email.com\",\n    \"cliente3@email.com\"\n  ]\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/bolos",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"bolos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Listar Bolos",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/api/bolos",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"bolos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Visualizar Bolo",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/api/bolos/10",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"bolos",
+						"10"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Atualizar Bolo",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"valor\": 65.90\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/bolos/5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"bolos",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Deletar Bolo",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/api/bolos/15",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"bolos",
+						"15"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

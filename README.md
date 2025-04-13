@@ -1,10 +1,10 @@
-# 🍰 CAKES API
+# 🍰 CAKE'S API
 
 Este é um projeto de uma **API RESTful** desenvolvida em Laravel para gerenciamento de bolos.  
-> Cada vez que um novo bolo é cadastrado, o sistema armazena informações como: nome, valor, peso (em gramas), quantidade disponível e uma lista de e-mails de clientes interessados.  
-> Se o bolo tiver unidades disponíveis, o sistema **envia e-mails automaticamente** aos interessados utilizando **filas (queues)** com **Redis** como driver de backend, além de técnicas de **chunking** e **atraso inteligente** nos jobs para garantir escalabilidade mesmo com dezenas de milhares de destinatários.  
-> A persistência dos dados é feita em um banco **SQLite**, ideal para ambientes de desenvolvimento e testes rápidos.  
-> Além disso, o sistema conta com **testes automatizados usando PestPHP**, e uma documentação completa no padrão **OpenAPI/Swagger**.
+- Cada vez que um novo bolo é cadastrado, o sistema armazena informações como: nome, valor, peso (em gramas), quantidade disponível e uma lista de e-mails de clientes interessados.  
+- Se o bolo tiver unidades disponíveis, o sistema **envia e-mails automaticamente** aos interessados utilizando **filas (queues)** com **Redis** como driver de backend, além de técnicas de **chunking** e **atraso inteligente** nos jobs para garantir escalabilidade mesmo com dezenas de milhares de destinatários.  
+- A persistência dos dados é feita em um banco **SQLite**, ideal para ambientes de desenvolvimento e testes rápidos.  
+- Além disso, o sistema conta com **testes automatizados usando PestPHP**, e uma documentação completa no padrão **OpenAPI/Swagger**.
 ---
 
 ## ⚠️ Pré-requisitos
@@ -88,7 +88,15 @@ Este é um projeto de uma **API RESTful** desenvolvida em Laravel para gerenciam
 
 ## 🧪 Como testar a API
 
-É recomendado o uso de ferramentas como [Postman](https://www.postman.com/) ou [Insomnia](https://insomnia.rest/) para testar os endpoints da API com facilidade.
+Você pode testar os endpoints da API utilizando ferramentas como [Postman](https://www.postman.com/) ou [Insomnia](https://insomnia.rest/).
+
+Este repositório já inclui uma coleção pronta para o Postman: o arquivo `cakes_api.postman_collection.json`, localizado na raiz do projeto.  
+Para importá-lo no Postman:
+
+1. Abra o Postman.
+2. Vá em **File > Import**.
+3. Selecione o arquivo `cakes_api.postman_collection.json`.
+4. Pronto! Agora você pode testar facilmente todos os endpoints da API.
 
 Exemplo de requisição para criação de bolo (POST `/api/bolos`):
 

@@ -1,66 +1,194 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🍰 CAKE'S API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Este é um projeto de uma **API RESTful** desenvolvida em Laravel para gerenciamento de bolos.  
+- Cada vez que um novo bolo é cadastrado, o sistema armazena informações como: nome, valor, peso (em gramas), quantidade disponível e uma lista de e-mails de clientes interessados.  
+- Se o bolo tiver unidades disponíveis, o sistema **envia e-mails automaticamente** aos interessados utilizando **filas (queues)** com **Redis** como driver de backend, além de técnicas de **chunking** e **atraso inteligente** nos jobs para garantir escalabilidade mesmo com dezenas de milhares de destinatários.  
+- A persistência dos dados é feita em um banco **SQLite**, ideal para ambientes de desenvolvimento e testes rápidos.  
+- Além disso, o sistema conta com **testes automatizados usando PestPHP**, e uma documentação completa no padrão **OpenAPI/Swagger**.
+---
 
-## About Laravel
+## ⚠️ Pré-requisitos
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP 8.2+
+- Composer
+- Redis instalado localmente ([guia oficial de instalação](https://redis.io/docs/getting-started/installation/))
+- Conta gratuita no [Mailtrap](https://mailtrap.io/) para testar envio de e-mails
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 🚀 Instruções de instalação
 
-## Learning Laravel
+1. Clone este repositório:
+   ```bash
+   git clone https://github.com/lilicunhadev/cakes-api.git
+   cd cakes-api
+   ```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+2. Instale as dependências:
+   ```bash
+   composer install
+   ```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+3. Gere a chave da aplicação:
+   ```bash
+   php artisan key:generate
+   ```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+4. Crie o arquivo de banco de dados SQLite:
+   ```bash
+   touch database/database.sqlite
+   ```
 
-## Laravel Sponsors
+5. Edite o arquivo `.env` com as seguintes variáveis:
+   ```env
+   DB_CONNECTION=sqlite
+   DB_DATABASE=/caminho/completo/até/database/database.sqlite
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+   QUEUE_CONNECTION=redis
+   CACHE_DRIVER=redis
+   SESSION_DRIVER=redis
 
-### Premium Partners
+   # Usando Mailtrap
+   MAIL_MAILER=smtp
+   MAIL_HOST=sandbox.smtp.mailtrap.io
+   MAIL_PORT=2525
+   MAIL_USERNAME=seu_username
+   MAIL_PASSWORD=sua_senha
+   MAIL_ENCRYPTION=tls
+   MAIL_FROM_ADDRESS=test@bolos.com
+   MAIL_FROM_NAME="Bolos da Dona Flor"
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+   REDIS_CLIENT=phpredis
+   REDIS_HOST=127.0.0.1
+   REDIS_PORT=6379
+   REDIS_PASSWORD=null
+   ```
 
-## Contributing
+6. Execute as migrations:
+   ```bash
+   php artisan migrate
+   ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+7. (Opcional) Popule o banco de dados com bolos fictícios:
+   ```bash
+   php artisan db:seed
+   ```
 
-## Code of Conduct
+8. Inicie o servidor Laravel:
+   ```bash
+   php artisan serve
+   ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+9. Em outro terminal, inicie o worker da fila:
+   ```bash
+   php artisan queue:work --tries=3 --timeout=60 --backoff=10
+   ```
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 🧪 Como testar a API
 
-## License
+Você pode testar os endpoints da API utilizando ferramentas como [Postman](https://www.postman.com/) ou [Insomnia](https://insomnia.rest/).
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Este repositório já inclui uma coleção pronta para o Postman: o arquivo `cakes_api.postman_collection.json`, localizado na raiz do projeto.  
+Para importá-lo no Postman:
+
+1. Abra o Postman.
+2. Vá em **File > Import**.
+3. Selecione o arquivo `cakes_api.postman_collection.json`.
+4. Pronto! Agora você pode testar facilmente todos os endpoints da API.
+
+Exemplo de requisição para criação de bolo (POST `/api/bolos`):
+
+```json
+{
+  "nome": "Bolo de Chocolate",
+  "peso": 1000,
+  "valor": 42.50,
+  "quantidade_disponivel": 10,
+  "emails_interessados": [
+    "cliente1@email.com",
+    "cliente2@email.com"
+  ]
+}
+```
+---
+## 🧪 Testes com PestPHP
+
+O projeto utiliza o [PestPHP](https://pestphp.com/) como framework de testes, oferecendo uma sintaxe fluida e moderna para testes unitários, de validação e de funcionalidades da API.
+
+### Instalação do Pest
+
+Se ainda não estiver instalado, execute os comandos abaixo para instalar o Pest no projeto:
+
+```bash
+composer require pestphp/pest:^3.8 nunomaduro/collision:^8.8 phpunit/phpunit:^11.5 --dev --with-all-dependencies
+composer require pestphp/pest-plugin-laravel --dev
+vendor/bin/pest --init
+```
+
+### Rodando os testes
+
+Para executar todos os testes do projeto:
+
+```bash
+vendor/bin/pest
+```
+
+Durante a execução, o Pest mostra um resumo com os testes que passaram ou falharam.
+
+---
+
+## 🌱 Seeds
+
+O projeto inclui um seeder chamado `BoloSeeder`, que preenche o banco de dados com bolos fictícios para testes e demonstrações.  
+Para executá-lo manualmente:
+
+```bash
+php artisan db:seed
+```
+
+Esse comando insere bolos com diferentes valores e quantidades, incluindo e-mails de interessados. Ideal para testar o envio automático de e-mails e a visualização de dados na API.
+
+Além disso, o seeder também utiliza a biblioteca `Faker` para gerar bolos aleatórios com nomes, valores, pesos e e-mails variados. Isso garante diversidade nos dados e facilita testes realistas durante o desenvolvimento.
+
+---
+
+## 🛠️ Monitoramento dos e-mails enviados
+
+O processo de envio de e-mails ocorre de forma assíncrona por meio de **jobs** enfileirados no Redis.
+
+Para acompanhar o que está acontecendo, você pode visualizar os logs no Laravel:
+
+```bash
+tail -f storage/logs/laravel.log
+```
+
+Ali você verá mensagens como:
+
+```
+[INFO] Iniciando envio do bolo 'Bolo de Chocolate' para 1000 interessados...
+[INFO] E-mail enviado para: cliente1@email.com
+[ERROR] Falha ao enviar para cliente2@email.com: SMTP server not responding
+[INFO] Job finalizado para 1000 e-mails (Bolo: Bolo de Chocolate)
+```
+
+Esses logs ajudam a verificar se o envio está funcionando corretamente ou se houve algum erro com algum destinatário.
+
+---
+
+## 📘 Documentação da API
+
+A documentação está no formato OpenAPI (Swagger):
+
+- O arquivo `cakes-api-doc.json` está localizado na raiz do projeto.
+- Para visualizar:
+    1. Acesse [https://editor.swagger.io](https://editor.swagger.io)
+    2. Clique em **File > Import file**
+    3. Selecione o arquivo `cakes-api-doc.json`
+
+Você verá uma documentação interativa da API com todos os endpoints.
+
+---
+
+### ✅ Agora você pode cadastrar bolos e o sistema notificará automaticamente os interessados via e-mail, com escalabilidade garantida. 🍰⚡
